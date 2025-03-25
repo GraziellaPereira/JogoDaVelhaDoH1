@@ -1,151 +1,172 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JogoDaVelhaDoH1;
-public class JogoDaVelha
+namespace JogoDaVelhaDoH1Metodos
 {
-    public string[,] tabuleiro = new string[3, 3];
-    public string jogadorO = "O";
-    public string jogadorX = "X";
-    public string jogadorAtual;
-    public int linha, coluna;
+    public class JogoDaVelha
+    {
+        public string[,] tabuleiro;
+        public string jogadorO = "O";
+        public string jogadorX = "X";
+        public string jogadorAtual;
 
+        public void HxH()
+        {
+            tabuleiro = new string[3, 3]; // Reinicia o tabuleiro
+            bool fimDeJogo = false;
+
+            while (!fimDeJogo)
+            {
+                Console.Clear();
+                ImprimirTabuleiro();
+                Console.WriteLine($"Jogador atual: {jogadorAtual}");
+                Console.Write("Digite a linha (1 a 3): ");
+                int linha = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                Console.Write("Digite a coluna (1 a 3): ");
+                int coluna = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                if (tabuleiro[linha, coluna] == null)
+                {
+                    tabuleiro[linha, coluna] = jogadorAtual;
+
+                    if (VerificarVitoria())
+                    {
+                        Console.Clear();
+                        ImprimirTabuleiro();
+                        Console.WriteLine($"Vitória do jogador {jogadorAtual}!");
+                        fimDeJogo = true;
+                    }
+                    else if (VerificarVelha())
+                    {
+                        Console.Clear();
+                        ImprimirTabuleiro();
+                        Console.WriteLine("Deu velha!");
+                        fimDeJogo = true;
+                    }
+                    else
+                    {
+                        jogadorAtual = (jogadorAtual == jogadorX) ? jogadorO : jogadorX;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Posição ocupada! Pressione qualquer tecla para tentar novamente.");
+                    Console.ReadKey();
+                }
+            }
+
+            Console.WriteLine("Pressione uma tecla para voltar ao menu...");
+            Console.ReadKey();
+        }
+
+        public void HxM()
+        {
+            tabuleiro = new string[3, 3]; // Reinicia o tabuleiro
+            bool fimDeJogo = false;
+            Random rnd = new Random();
+
+            while (!fimDeJogo)
+            {
+                Console.Clear();
+                ImprimirTabuleiro();
+
+                int linha, coluna;
+
+                if (jogadorAtual == jogadorX)
+                {
+                    Console.WriteLine("Sua vez de jogar!");
+                    Console.Write("Digite a linha (1 a 3): ");
+                    linha = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                    Console.Write("Digite a coluna (1 a 3): ");
+                    coluna = Convert.ToInt32(Console.ReadLine()) - 1;
+                }
+                else
+                {
+                    Console.WriteLine("Vez do computador...");
+                    Console.ReadKey();
+                    do
+                    {
+                        linha = rnd.Next(0, 3);
+                        coluna = rnd.Next(0, 3);
+                    } while (tabuleiro[linha, coluna] != null);
+                }
+
+                if (tabuleiro[linha, coluna] == null)
+                {
+                    tabuleiro[linha, coluna] = jogadorAtual;
+
+                    if (VerificarVitoria())
+                    {
+                        Console.Clear();
+                        ImprimirTabuleiro();
+                        Console.WriteLine($"Vitória do jogador {jogadorAtual}!");
+                        fimDeJogo = true;
+                    }
+                    else if (VerificarVelha())
+                    {
+                        Console.Clear();
+                        ImprimirTabuleiro();
+                        Console.WriteLine("Deu velha!");
+                        fimDeJogo = true;
+                    }
+                    else
+                    {
+                        jogadorAtual = (jogadorAtual == jogadorX) ? jogadorO : jogadorX;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Posição ocupada! Pressione qualquer tecla para tentar novamente.");
+                    Console.ReadKey();
+                }
+            }
+
+            Console.WriteLine("Pressione uma tecla para voltar ao menu...");
+            Console.ReadKey();
+        }
+
+        private bool VerificarVitoria()
+        {
+            return (
+                (tabuleiro[0, 0] == jogadorAtual && tabuleiro[0, 1] == jogadorAtual && tabuleiro[0, 2] == jogadorAtual) ||
+                (tabuleiro[1, 0] == jogadorAtual && tabuleiro[1, 1] == jogadorAtual && tabuleiro[1, 2] == jogadorAtual) ||
+                (tabuleiro[2, 0] == jogadorAtual && tabuleiro[2, 1] == jogadorAtual && tabuleiro[2, 2] == jogadorAtual) ||
+
+                (tabuleiro[0, 0] == jogadorAtual && tabuleiro[1, 0] == jogadorAtual && tabuleiro[2, 0] == jogadorAtual) ||
+                (tabuleiro[0, 1] == jogadorAtual && tabuleiro[1, 1] == jogadorAtual && tabuleiro[2, 1] == jogadorAtual) ||
+                (tabuleiro[0, 2] == jogadorAtual && tabuleiro[1, 2] == jogadorAtual && tabuleiro[2, 2] == jogadorAtual) ||
+
+                (tabuleiro[0, 0] == jogadorAtual && tabuleiro[1, 1] == jogadorAtual && tabuleiro[2, 2] == jogadorAtual) ||
+                (tabuleiro[0, 2] == jogadorAtual && tabuleiro[1, 1] == jogadorAtual && tabuleiro[2, 0] == jogadorAtual)
+            );
+        }
+
+        private bool VerificarVelha()
+        {
+            foreach (var pos in tabuleiro)
+            {
+                if (pos == null)
+                    return false;
+            }
+            return true;
+        }
+
+        private void ImprimirTabuleiro()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    string valor = tabuleiro[i, j] ?? " ";
+                    Console.Write($" {valor} ");
+                    if (j < 2)
+                        Console.Write("|");
+                }
+                Console.WriteLine();
+                if (i < 2)
+                    Console.WriteLine("---+---+---");
+            }
+        }
+    }
 }
-
-
-
-        bool fimDeJogo = false;
-//fimDeJogo == false
-while (!fimDeJogo)
-{
-    if (jogadorAtual == jogadorX)
-    {
-        Console.WriteLine("Sua vez de jogar!");
-        Console.WriteLine("Digite a linha: ");
-        linha = Convert.ToInt32(Console.ReadLine()) - 1;
-
-        Console.WriteLine("Digite a coluna: ");
-        coluna = Convert.ToInt32(Console.ReadLine()) - 1;
-    }
-    else
-    {
-        Console.WriteLine("Vez do computador!");
-        Console.ReadKey();
-        linha = rnd.Next(0, 3);
-        coluna = rnd.Next(0, 3);
-    }
-
-    if (tabuleiro[linha, coluna] == null)
-    {
-        tabuleiro[linha, coluna] = jogadorAtual;
-        if (
-
-            (tabuleiro[0, 0] == tabuleiro[0, 1] &&
-            tabuleiro[0, 1] == tabuleiro[0, 2] &&
-            tabuleiro[0, 0] != null
-            )
-            ||
-            (tabuleiro[1, 0] == tabuleiro[1, 1] &&
-            tabuleiro[1, 1] == tabuleiro[1, 2] &&
-            tabuleiro[1, 0] != null
-            )
-            ||
-            (tabuleiro[2, 0] == tabuleiro[2, 1] &&
-            tabuleiro[2, 1] == tabuleiro[2, 2] &&
-            tabuleiro[2, 0] != null
-            )
-            ||
-            (
-                tabuleiro[0, 0] == tabuleiro[1, 0] &&
-                tabuleiro[1, 0] == tabuleiro[2, 0] &&
-                tabuleiro[0, 0] != null
-            )
-              ||
-            (
-                tabuleiro[0, 1] == tabuleiro[1, 1] &&
-                tabuleiro[1, 1] == tabuleiro[2, 1] &&
-                tabuleiro[0, 1] != null
-            ) ||
-            (
-                tabuleiro[0, 2] == tabuleiro[1, 2] &&
-                tabuleiro[1, 2] == tabuleiro[2, 2] &&
-                tabuleiro[0, 2] != null
-            ) ||
-            (
-              tabuleiro[0, 0] == tabuleiro[1, 1] &&
-              tabuleiro[1, 1] == tabuleiro[2, 2] &&
-              tabuleiro[0, 0] != null
-            ) ||
-            (
-              tabuleiro[2, 0] == tabuleiro[1, 1] &&
-              tabuleiro[1, 1] == tabuleiro[0, 2] &&
-              tabuleiro[2, 0] != null
-            )
-        )
-        {
-            Console.WriteLine("Vitória do jogador "
-                + jogadorAtual);
-            fimDeJogo = true;
-        }
-        else
-            if
-            (
-            tabuleiro[0, 0] != null &&
-            tabuleiro[0, 1] != null &&
-            tabuleiro[0, 2] != null &&
-            tabuleiro[1, 0] != null &&
-            tabuleiro[1, 1] != null &&
-            tabuleiro[1, 2] != null &&
-            tabuleiro[2, 0] != null &&
-            tabuleiro[2, 1] != null &&
-            tabuleiro[2, 2] != null
-
-            )
-        {
-            Console.WriteLine("Deu velha!");
-            fimDeJogo = true;
-        }
-
-        if (jogadorAtual == jogadorX)
-            jogadorAtual = jogadorO;
-        else
-            jogadorAtual = jogadorX;
-    }
-    else
-    {
-        if (jogadorAtual == jogadorX)
-        {
-            Console.WriteLine("Posição está ocupada");
-        }
-
-    }
-    Console.Clear();
-    ImprimirTabuleiro();
-}
-
-Console.ReadLine();
-
-void ImprimirTabuleiro()
-{
-    for (int linhaTabuleiro = 0; linhaTabuleiro < 3; linhaTabuleiro++)
-    {
-        for (int colunaTabuleiro = 0; colunaTabuleiro < 3; colunaTabuleiro++)
-        {
-            if (tabuleiro[linhaTabuleiro, colunaTabuleiro] == null)
-                Console.Write("   ");
-            else
-                Console.Write(" " + tabuleiro[linhaTabuleiro, colunaTabuleiro] + " ");
-            if (colunaTabuleiro < 2)
-                Console.Write(" | ");
-        }
-        Console.WriteLine();
-        if (linhaTabuleiro < 2)
-            Console.WriteLine("----------------");
-
-    }
-}
-
-
